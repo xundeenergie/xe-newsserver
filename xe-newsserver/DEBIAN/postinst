@@ -1,0 +1,79 @@
+#!/bin/sh
+
+
+
+# postinst script for webpy-example
+#
+# see: dh_installdeb(1)
+
+#_DEB_SYSTEMD_HELPER_DEBUG=1
+
+set -e
+
+# summary of how this script can be called:
+#        * <postinst> `configure' <most-recently-configured-version>
+#        * <old-postinst> `abort-upgrade' <new version>
+#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#          <new-version>
+#        * <postinst> `abort-remove'
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+
+# source debconf library
+#. /usr/share/debconf/confmodule
+
+# For user-services only, for earch target an extra section! for system-services user deb-systemd*
+# put in full unit-name. for example "mkbackup@hourly.service"
+
+
+case "$1" in
+
+    configure)
+        #radicale wird nicht mehr installiert, stattdessen kommt horde zum Einsatz. 
+#        pip3 show radicale > /dev/null || python3 -m pip install --upgrade radicale
+#        pip3 show radicale_imap > /dev/null || python3 -m pip install --upgrade git+https://github.com/Unrud/RadicaleIMAP
+#        pip3 show radicale_infcloud > /dev/null || python3 -m pip install --upgrade git+https://github.com/Unrud/RadicaleInfCloud
+#        if test -d "/var/www/rainloop"; then
+#            :
+#        else
+#            mkdir /var/www/rainloop  
+#            cd /var/www/rainloop && /usr/bin/curl -sL https://repository.rainloop.net/installer.php | php
+#        fi
+#        # Set owner, group and permissions for rainloop
+#        cd /var/www/rainloop
+#        find . -type d -exec chmod 755 {} \;
+#        find . -type f -exec chmod 644 {} \;
+#        chown -R www-data:www-data .
+
+        # enable new services for mailserver
+        SERVICES="
+                fetchnews.timer
+                "
+                
+        for s in $SERVICES; do
+            deb-systemd-helper-new unmask $s >/dev/null || true
+            if deb-systemd-helper-new --quiet was-enabled $s; then
+                    # Enables the unit on first installation, creates new
+                    # symlinks on upgrades if the unit file has changed.
+                    deb-systemd-helper-new enable $s >/dev/null || true
+            else
+                    # Update the statefile to add new symlinks (if any), which need to be
+                    # cleaned up on purge. Also remove old symlinks.
+                    deb-systemd-helper-new update-state $s >/dev/null || true
+            fi
+        done
+        ;;
+    abort-upgrade|abort-remove|abort-deconfigure)
+        exit 0
+        ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+        ;;
+
+esac
+

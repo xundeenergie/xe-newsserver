@@ -1,0 +1,15 @@
+Package: xe-newsserver
+Version: 0.1.1
+Section: news
+Priority: extra
+Architecture: all
+Maintainer: Jakobus Schürz <jakob@xundeenergie.at>
+Homepage: http://github.com/xundeenergie/xe-newsserver
+Provides: xe-newsserver
+Depends: leafnode
+Recommends: 
+Suggests: 
+Description: Meta-Package for newsserver
+ This package is a meta-package for a newsserver build leafnode for xundeenergie
+
+
