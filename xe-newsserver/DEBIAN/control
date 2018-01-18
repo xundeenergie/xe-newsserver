@@ -1,5 +1,5 @@
 Package: xe-newsserver
-Version: 0.1.2
+Version: 0.1.3
 Section: news
 Priority: extra
 Architecture: all
